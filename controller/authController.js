@@ -2,13 +2,11 @@ import prisma from "../prisma/prismaClient.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-// Register user
 export const register = async (req, res) => {
   try {
-      console.log("hggg",req.body)
+    console.log("hggg", req.body);
 
     const { email, name, password } = req.body;
-    // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -17,10 +15,8 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user in database
     const user = await prisma.user.create({
       data: {
         email,
@@ -43,12 +39,10 @@ export const register = async (req, res) => {
   }
 };
 
-// Login user
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user by email
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -57,17 +51,19 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // Compare passwords
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // Generate JWT token
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || "secret", {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET || "secret",
+      {
+        expiresIn: "7d",
+      },
+    );
 
     res.status(200).json({
       message: "Login successful",
@@ -84,7 +80,6 @@ export const login = async (req, res) => {
   }
 };
 
-// Get user by ID
 export const getUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -111,7 +106,6 @@ export const getUser = async (req, res) => {
   }
 };
 
-// Update user
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -139,7 +133,6 @@ export const updateUser = async (req, res) => {
   }
 };
 
-// Delete user
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -154,3 +147,4 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+

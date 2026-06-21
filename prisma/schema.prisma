@@ -17,4 +17,16 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  files     File[]
+}
+
+model File{
+    id        Int    @id@default(autoincrement())
+    fileSize  Int   
+    fileName  String
+    fileUrl   String 
+    UserId    Int
+    mimetype  String
+    user      User  @relation(fields:[UserId],references:[id])
+
 }

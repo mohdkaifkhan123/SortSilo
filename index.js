@@ -3,33 +3,28 @@ import dotenv from "dotenv";
 import connectDB from "./connectdb.js";
 import authRoutes from "./routes/authRoutes.js";
 import prisma from "./prisma/prismaClient.js";
-
+import fileRoutes from "./routes/fileRoutes.js";
 dotenv.config();
 
 const app = express();
 
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Connect to database
 connectDB();
 
-// Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/files", fileRoutes);
 
-// Health check route
 app.get("/health", (req, res) => {
   res.status(200).json({ message: "Server is running" });
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ message: "Server error", error: err.message });
 });
 
-// Graceful shutdown
 process.on("SIGINT", async () => {
   await prisma.$disconnect();
   process.exit(0);
