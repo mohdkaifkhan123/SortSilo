@@ -27,6 +27,7 @@ model File{
     fileUrl   String 
     UserId    Int
     mimetype  String
+    deletedAt String
     user      User  @relation(fields:[UserId],references:[id])
 
 }

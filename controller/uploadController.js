@@ -2,7 +2,8 @@ import prisma from "../prisma/prismaClient.js";
 
 export const uploadFile = async (req, res) => {
   try {
-    const { fieldname, originalname, path, size,mimetype } = req.file;
+    const { fieldname, originalname, path, size, mimetype } = req.file;
+    // const {deletedAt}=req.body;
     console.log("File uploaded:", fieldname, originalname, path, size);
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
@@ -20,6 +21,34 @@ export const uploadFile = async (req, res) => {
       },
     });
     return res.status(200).json({ message: "File saved successfully", file });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+
+export const getFile = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const fileList = await prisma.file.findMany({
+      where: { UserId: userId },
+    });
+    return res.status(200).json({ message: "Files retrieved", fileList });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+export const deleteFile = async (req, res) => {
+  try {
+    const fileId = req.params.id;
+    await prisma.file.update({
+      where: { id: parseInt(fileId) },
+      data: { deletedAt: new Date() },
+    });
+    return res.status(200).json({ message: "File deleted successfully" });
   } catch (error) {
     return res
       .status(500)
