@@ -4,6 +4,7 @@ import connectDB from "./connectdb.js";
 import authRoutes from "./routes/authRoutes.js";
 import prisma from "./prisma/prismaClient.js";
 import fileRoutes from "./routes/fileRoutes.js";
+import folderRoutes from "./routes/folderRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -15,7 +16,7 @@ connectDB();
 
 app.use("/api/auth", authRoutes);
 app.use("/api/files", fileRoutes);
-
+app.use("/api/folder", folderRoutes);
 app.get("/health", (req, res) => {
   res.status(200).json({ message: "Server is running" });
 });
@@ -31,8 +32,5 @@ process.on("SIGINT", async () => {
 });
 
 app.listen(process.env.PORT, () => {
-  console.log(
-    "Server is running on port",
-    process.env.PORT
-  );
+  console.log("Server is running on port", process.env.PORT);
 });
