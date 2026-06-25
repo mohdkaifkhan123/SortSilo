@@ -27,3 +27,16 @@ export const createFolder = async (req, res) => {
     res.status(500).json({ message: error });
   }
 };
+
+export const findFoldersFiles = async (req, res) => {
+  const userId = req.userId;
+  const findAll = await prisma.folder.findMany({
+    where: { UserId: userId },include:{
+      files:true
+    }
+  });
+  if (findAll) return res.status(200).json({ message: findAll });
+  return res.status(404).json({
+    message: "Folder not found",
+  });
+};

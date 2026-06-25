@@ -2,9 +2,18 @@ import prisma from "../prisma/prismaClient.js";
 
 export const uploadFile = async (req, res) => {
   try {
+    console.log("sfdfghjk");
     const { fieldname, originalname, path, size, mimetype } = req.file;
-    // const {deletedAt}=req.body;
-    console.log("File uploaded:", fieldname, originalname, path, size);
+    const { FolderId } = req.body;
+    console.log(req.body);
+    console.log(
+      "File uploaded:",
+      fieldname,
+      originalname,
+      path,
+      size,
+      FolderId,
+    );
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
@@ -15,6 +24,7 @@ export const uploadFile = async (req, res) => {
         fileSize: size,
         UserId: req.userId,
         mimetype: mimetype,
+        FolderId: parseInt(FolderId),
       },
       include: {
         user: true,
