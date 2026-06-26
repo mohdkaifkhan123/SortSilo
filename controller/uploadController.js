@@ -2,18 +2,9 @@ import prisma from "../prisma/prismaClient.js";
 
 export const uploadFile = async (req, res) => {
   try {
-    console.log("sfdfghjk");
     const { fieldname, originalname, path, size, mimetype } = req.file;
     const { FolderId } = req.body;
-    console.log(req.body);
-    console.log(
-      "File uploaded:",
-      fieldname,
-      originalname,
-      path,
-      size,
-      FolderId,
-    );
+
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
@@ -63,5 +54,43 @@ export const deleteFile = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Server error", error: error.message });
+  }
+};
+
+export const shareFile = async (req, res) => {
+  const { fileId, email, permission } = req.body;
+  const findUserByMail = await prisma.user.findUnique({
+    where: { email: email },
+  });
+  if (!findUserByMail)
+    return res.status(404).json({ message: "User not found" });
+  if (req.userId === findUserByMail.id)
+    return res.status(403).json({ message: "Can't shared with yourself" });
+  try {
+    const sharedData = await prisma.shared.create({
+      data: {
+        fileId: fileId,
+        senderUserId: req.userId,
+        receiverUserId: findUserByMail.id,
+        createdAt: new Date(),
+        permission: permission,
+      },
+    });
+    return res.status(200).json({ message: sharedData });
+  } catch (error) {
+    return res.status(500).json({ message: error });
+  }
+};
+
+export const removeAccess = async (req, res) => {
+  const { shareId } = req.body;
+
+  try {
+    const sharedData = await prisma.shared.delete({
+      where: { id: shareId },
+    });
+    return res.status(200).json({ message: "Access removed successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: error });
   }
 };

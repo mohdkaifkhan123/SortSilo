@@ -9,16 +9,22 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
+enum Permission {
+  VIEWER
+  EDITOR
+}
 model User {
-  id        Int     @id @default(autoincrement())
-  email     String  @unique
-  name      String?
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  files     File[]
-  folder    Folder[]
+  id              Int     @id @default(autoincrement())
+  email           String  @unique
+  name            String?
+  password        String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  files           File[]
+  folder          Folder[]
+  sharedSender    Shared[] @relation("SendShares")
+  receivedShares  Shared[] @relation("ReceivedShares")
+
 }
 
 model File{
@@ -32,6 +38,7 @@ model File{
     user      User  @relation(fields:[UserId],references:[id])
     FolderId  Int?
     folder    Folder? @relation(fields:[FolderId],references:[id])
+    shares    Shared[]
 }
 
 model Folder{
@@ -43,4 +50,16 @@ model Folder{
   parent     Folder? @relation("NestedArch",fields:[parentId],references:[id])
   subFolders Folder[] @relation("NestedArch")
   files      File[]
+}
+
+model Shared{
+  id             Int   @id@default(autoincrement())
+  fileId         Int?   
+  file           File?  @relation(fields:[fileId],references:[id])
+  senderUserId   Int
+  sender         User  @relation("SendShares",fields:[senderUserId],references:[id])
+  receiverUserId Int
+  receiver       User  @relation("ReceivedShares",fields:[receiverUserId],references:[id])
+  createdAt      DateTime?
+  permission     Permission
 }
