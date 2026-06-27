@@ -31,12 +31,74 @@ export const createFolder = async (req, res) => {
 export const findFoldersFiles = async (req, res) => {
   const userId = req.userId;
   const findAll = await prisma.folder.findMany({
-    where: { UserId: userId },include:{
-      files:true
-    }
+    where: { UserId: userId },
+    include: {
+      files: true,
+    },
   });
   if (findAll) return res.status(200).json({ message: findAll });
   return res.status(404).json({
     message: "Folder not found",
   });
+};
+
+// id             Int   @id@default(autoincrement())
+//   fileId         Int?
+//   file           File?  @relation(fields:[fileId],references:[id])
+//   folderId       Int?
+//   folder         Folder? @relation(fields:[folderId],references:[id])
+//   senderUserId   Int
+//   sender         User  @relation("SendShares",fields:[senderUserId],references:[id])
+//   receiverUserId Int
+//   receiver       User  @relation("ReceivedShares",fields:[receiverUserId],references:[id])
+//   createdAt      DateTime?
+//   permission     Permission
+export const shareFolder = async (req, res) => {
+  const { email, permission, folderId } = req.body;
+
+  const EmailValid = await prisma.user.findUnique({ where: { email: email } });
+  if (!EmailValid) return res.status(404).json({ message: "User not found" });
+  const sharedFolder = await prisma.shared.create({
+    data: {
+      folderId: folderId,
+      senderUserId: req.userId,
+      receiverUserId: EmailValid.id,
+      permission: permission,
+      createdAt: new Date(),
+    },
+  });
+
+  if (shareFolder)
+    return res.status(200).json({ message: "Shared folder info", shareFolder });
+  return res.status(500).json({ message: "Internal server error" });
+};
+
+const collectFolderContent = async (folderId) => {
+  const collectFolder = await prisma.folder.findMany({
+    where: { parentId: folderId },
+  });
+  const files = await prisma.file.findMany({ where: { FolderId: folderId } });
+  const result = {
+    folders: [...collectFolder],
+    files: [...files],
+  };
+   console.log(collectFolder,files)
+  for (const folder of collectFolder) {
+    const child = await collectFolderContent(folder?.id);
+    result.folders.push(...child.folders);
+    result.files.push(...child.files);
+  }
+  return result;
+};
+
+export const getFolderContent = async (req, res) => {
+  const folderId = parseInt(req.params.folderId);
+  const userId = req.userId;
+
+  const collectAllContent = await collectFolderContent(folderId);
+  try {
+    return res.status(200).json({ message: collectAllContent });
+  } catch (error) {
+    return res.status(500).json({ message: "Interval server error" });
+  }
 };

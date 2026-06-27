@@ -50,12 +50,15 @@ model Folder{
   parent     Folder? @relation("NestedArch",fields:[parentId],references:[id])
   subFolders Folder[] @relation("NestedArch")
   files      File[]
+  shares     Shared[]
 }
 
 model Shared{
   id             Int   @id@default(autoincrement())
   fileId         Int?   
   file           File?  @relation(fields:[fileId],references:[id])
+  folderId       Int?
+  folder         Folder? @relation(fields:[folderId],references:[id])
   senderUserId   Int
   sender         User  @relation("SendShares",fields:[senderUserId],references:[id])
   receiverUserId Int
