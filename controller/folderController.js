@@ -74,23 +74,35 @@ export const shareFolder = async (req, res) => {
 };
 
 const collectFolderContent = async (folderId) => {
-  const collectFolder = await prisma.folder.findMany({
-    where: { parentId: folderId },
+  const childFolders = await prisma.folder.findMany({
+    where: {
+      parentId: folderId,
+    },
   });
-  const files = await prisma.file.findMany({ where: { FolderId: folderId } });
-  const result = {
-    folders: [...collectFolder],
-    files: [...files],
-  };
-   console.log(collectFolder,files)
-  for (const folder of collectFolder) {
-    const child = await collectFolderContent(folder?.id);
-    result.folders.push(...child.folders);
-    result.files.push(...child.files);
-  }
-  return result;
-};
 
+  const files = await prisma.file.findMany({
+    where: {
+      FolderId: folderId,
+    },
+  });
+
+  const nestedFolders = [];
+
+  for (const folder of childFolders) {
+    const childTree = await collectFolderContent(folder.id);
+
+    nestedFolders.push({
+      ...folder,
+      folders: childTree.folders,
+      files: childTree.files,
+    });
+  }
+
+  return {
+    files,
+    folders: nestedFolders,
+  };
+};
 export const getFolderContent = async (req, res) => {
   const folderId = parseInt(req.params.folderId);
   const userId = req.userId;
