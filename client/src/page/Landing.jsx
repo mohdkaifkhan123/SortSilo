@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-// Minimalist custom SVG Icons for feature highlights
 const StorageIcon = () => (
   <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5 5 0 00-4.591-3.42C11 3 9 5 9 7v2" />
@@ -29,16 +28,12 @@ export default function LandingPage() {
   const [billingCycle, setBillingCycle] = useState('monthly');
 
   return (
-    /* "fixed inset-0 overflow-y-auto" breaks out of any parent padding 
-       and fills 100% horizontal monitor screen exactly.
-    */
+    
     <div className="fixed inset-0 w-full h-full bg-[#FBF9F6] text-gray-900 font-sans antialiased selection:bg-black selection:text-white overflow-y-auto">
       
-      {/* 1. STICKY NAVIGATION HEADER */}
       <header className="sticky top-0 z-50 bg-[#FBF9F6]/80 backdrop-blur-md border-b border-gray-200/60 w-full">
         <div className="w-full mx-auto px-6 lg:px-12 h-20 flex items-center justify-between">
           
-          {/* Logo Brand */}
           <div className="flex items-center space-x-3">
             <div className="grid grid-cols-2 gap-0.5 w-6 h-6">
               <div className="bg-black rounded-sm"></div>
@@ -49,14 +44,12 @@ export default function LandingPage() {
             <span className="text-xl font-bold tracking-tight">StorageSilo</span>
           </div>
 
-          {/* Links */}
           <nav className="hidden md:flex items-center space-x-10 text-sm font-medium text-gray-600">
             <a href="#features" className="hover:text-black transition-colors">Product</a>
             <a href="#pricing" className="hover:text-black transition-colors">Pricing</a>
             <a href="#enterprise" className="hover:text-black transition-colors">Enterprise</a>
           </nav>
 
-          {/* CTA Actions */}
           <div className="flex items-center space-x-4">
             <a href="/login" className="text-sm font-medium text-gray-700 hover:text-black transition-colors">
               Sign In
@@ -71,11 +64,9 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* 2. HERO PROMOTION SECTION */}
       <section className="relative overflow-hidden pt-16 pb-24 lg:pt-24 lg:pb-32 border-b border-gray-100 w-full">
         <div className="w-full mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
-          {/* Left Text Promotion */}
           <div className="lg:col-span-6 space-y-8 text-center lg:text-left">
             <div className="inline-flex items-center space-x-2 bg-indigo-50 text-indigo-700 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider">
               <span>🚀 StorageSilo 2.0 Now Live</span>
@@ -103,7 +94,6 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Right Product Preview Mockup */}
           <div className="lg:col-span-6 relative w-full h-[360px] sm:h-[460px] bg-[#1E1915] rounded-2xl shadow-2xl p-6 border border-gray-800/80 overflow-hidden">
             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#FFF_1px,transparent_1px)] [background-size:20px_20px]"></div>
             
@@ -142,7 +132,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 3. PRODUCT CORE FEATURES */}
       <section id="features" className="w-full mx-auto px-6 lg:px-12 py-24">
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-20">
           <h2 className="text-3xl font-light tracking-tight text-gray-900 sm:text-4xl">
@@ -186,7 +175,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 4. PRICING INTERACTIVE SCHEME */}
       <section id="pricing" className="bg-white border-t border-b border-gray-200/60 py-24 w-full">
         <div className="w-full mx-auto px-6 lg:px-12">
           
@@ -286,7 +274,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 5. FOOTER */}
       <footer className="w-full mx-auto px-6 lg:px-12 py-12 text-center sm:flex sm:items-center sm:justify-between text-xs text-gray-500">
         <div>
           &copy; 2026 StorageSilo Systems Inc. All rights reserved.

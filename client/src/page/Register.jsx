@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../store/authStore';
 
 const GoogleIcon = () => (
   <svg className="h-5 w-5 mr-3 text-gray-700" viewBox="0 0 24 24">
@@ -13,6 +15,25 @@ const AppleIcon = () => (
 );
 
 export default function Register() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  
+  const navigate = useNavigate();
+  const { register, isLoading, error, clearError } = useAuthStore();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    clearError();
+
+    try {
+      await register({ name, email, password });
+      navigate('/login'); 
+    } catch (err) {
+      console.error(err)
+    }
+  };
+
   return (
     <div className="fixed inset-0 flex h-full w-full bg-white font-sans antialiased selection:bg-black selection:text-white overflow-hidden">
       
@@ -30,7 +51,7 @@ export default function Register() {
               <div className="bg-indigo-300 rounded-sm"></div>
               <div className="bg-white/40 rounded-sm"></div>
             </div>
-            <span className="text-xl font-bold tracking-tight">SiloSpace</span>
+            <span className="text-xl font-bold tracking-tight">SiloStorage</span>
           </div>
 
           <div className="max-w-xl space-y-4">
@@ -89,13 +110,21 @@ export default function Register() {
             </div>
           </div>
 
-          <form action="#" method="POST" className="space-y-4">
+          {error && (
+            <div className="mb-4 p-3 text-sm text-red-500 bg-red-50 rounded-lg border border-red-100">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             
             <div className="relative group">
               <input
                 id="name"
                 name="name"
                 type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 placeholder=" "
                 required
                 className="peer block w-full rounded-xl border border-gray-200 px-4 pt-5 pb-2 text-gray-950 bg-white placeholder-transparent focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-all"
@@ -113,6 +142,8 @@ export default function Register() {
                 id="email"
                 name="email"
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder=" "
                 required
                 className="peer block w-full rounded-xl border border-gray-200 px-4 pt-5 pb-2 text-gray-950 bg-white placeholder-transparent focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-all"
@@ -130,6 +161,8 @@ export default function Register() {
                 id="password"
                 name="password"
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder=" "
                 required
                 className="peer block w-full rounded-xl border border-gray-200 px-4 pt-5 pb-2 text-gray-950 bg-white placeholder-transparent focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm transition-all"
@@ -145,9 +178,10 @@ export default function Register() {
             <div className="pt-2">
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-xl bg-black px-4 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-900 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all duration-150"
+                disabled={isLoading}
+                className="flex w-full justify-center rounded-xl bg-black px-4 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-900 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all duration-150 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Agree and Register
+                {isLoading ? 'Registering...' : 'Agree and Register'}
               </button>
             </div>
           </form>
